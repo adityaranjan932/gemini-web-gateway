@@ -39,6 +39,10 @@ export const env = {
   nodeEnv: process.env["NODE_ENV"] ?? "development",
   requestBodyLimit: process.env["REQUEST_BODY_LIMIT"] ?? "1mb",
   apiKeys: parseApiKeys(requireEnv("GATEWAY_API_KEYS")),
+  rateLimit: {
+    perClient: Number(process.env["RATE_LIMIT_PER_CLIENT"]) || 10,
+    global: Number(process.env["RATE_LIMIT_GLOBAL"]) || 30,
+  },
   gemini: {
     psid: requireEnv("GEMINI_PSID"),
     psidts: requireEnv("GEMINI_PSIDTS"),

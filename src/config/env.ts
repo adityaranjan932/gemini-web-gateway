@@ -39,4 +39,8 @@ export const env = {
   nodeEnv: process.env["NODE_ENV"] ?? "development",
   requestBodyLimit: process.env["REQUEST_BODY_LIMIT"] ?? "1mb",
   apiKeys: parseApiKeys(requireEnv("GATEWAY_API_KEYS")),
+  gemini: {
+    psid: requireEnv("GEMINI_PSID"),
+    psidts: requireEnv("GEMINI_PSIDTS"),
+  },
 } as const;

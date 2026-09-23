@@ -5,9 +5,9 @@
   "main": "dist/server.js",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "tsx watch --max-http-header-size=65536 src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "node --max-http-header-size=65536 dist/server.js",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [],

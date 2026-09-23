@@ -42,5 +42,7 @@ export const env = {
   gemini: {
     psid: requireEnv("GEMINI_PSID"),
     psidts: requireEnv("GEMINI_PSIDTS"),
+    refreshMinutes: Number(process.env["GEMINI_REFRESH_MINUTES"]) || 10,
+    sessionFile: process.env["GEMINI_SESSION_FILE"] ?? "data/session.json",
   },
 } as const;

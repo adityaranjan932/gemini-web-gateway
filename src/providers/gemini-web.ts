@@ -1,15 +1,13 @@
-import { env } from "../config/env.js";
 import type { ChatMessage, ChatRequest, ChatResult } from "../core/provider.js";
+import { cookieHeader, refreshSession } from "./gemini-session.js";
 
 const BASE_URL = "https://gemini.google.com";
 const GENERATE_URL = `${BASE_URL}/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate`;
 const USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
+const INTERNAL_CODE_BLOCK = /```[\w-]*\?code_[^\n]*\n[\s\S]*?```/g;
 
 let accessToken: string | undefined;
-
-const cookieHeader = (): string =>
-  `__Secure-1PSID=${env.gemini.psid}; __Secure-1PSIDTS=${env.gemini.psidts}`;
 
 const tryParse = (value: string): any => {
   try {
@@ -69,12 +67,12 @@ const extractText = (raw: string): string | undefined => {
   return text;
 };
 
-export const chat = async (request: ChatRequest): Promise<ChatResult> => {
+const generate = async (prompt: string): Promise<string> => {
   accessToken ??= await fetchAccessToken();
 
   const body = new URLSearchParams({
     at: accessToken,
-    "f.req": JSON.stringify([null, JSON.stringify([[toPrompt(request.messages)], null, null])]),
+    "f.req": JSON.stringify([null, JSON.stringify([[prompt], null, null])]),
   });
 
   const response = await fetch(GENERATE_URL, {
@@ -100,6 +98,20 @@ export const chat = async (request: ChatRequest): Promise<ChatResult> => {
   if (content === undefined) {
     accessToken = undefined;
     throw new Error("Gemini returned an unrecognized response");
+  }
+
+  return content.replace(INTERNAL_CODE_BLOCK, "").trim();
+};
+
+export const chat = async (request: ChatRequest): Promise<ChatResult> => {
+  const prompt = toPrompt(request.messages);
+  let content: string;
+
+  try {
+    content = await generate(prompt);
+  } catch {
+    await refreshSession();
+    content = await generate(prompt);
   }
 
   return { content, model: request.model, finishReason: "stop" };

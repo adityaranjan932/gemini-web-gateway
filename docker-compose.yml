@@ -1,0 +1,10 @@
+services:
+  gateway:
+    build: .
+    container_name: gateway
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data

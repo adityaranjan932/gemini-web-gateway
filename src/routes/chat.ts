@@ -21,7 +21,7 @@ const sendError = (res: Response, status: number, message: string, type: string)
 };
 
 router.post("/chat/completions", async (req, res) => {
-  const { model, messages } = req.body ?? {};
+  const { messages } = req.body ?? {};
 
   if (!Array.isArray(messages) || messages.length === 0 || !messages.every(isChatMessage)) {
     sendError(
@@ -34,10 +34,7 @@ router.post("/chat/completions", async (req, res) => {
   }
 
   try {
-    const result = await chat({
-      model: typeof model === "string" ? model : DEFAULT_MODEL,
-      messages,
-    });
+    const result = await chat({ model: DEFAULT_MODEL, messages });
 
     res.json({
       id: `chatcmpl-${randomUUID()}`,

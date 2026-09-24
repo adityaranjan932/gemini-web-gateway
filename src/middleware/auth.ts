@@ -11,7 +11,10 @@ export const authenticate = (
 ): void => {
   const header = req.header("authorization");
 
-  if (!header?.startsWith(BEARER_PREFIX)) {
+  if (
+    header === undefined ||
+    header.slice(0, BEARER_PREFIX.length).toLowerCase() !== BEARER_PREFIX.toLowerCase()
+  ) {
     res.status(401).json({
       error: {
         message: "Missing or malformed Authorization header",

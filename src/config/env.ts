@@ -42,7 +42,7 @@ const parseApiKeys = (raw: string): ReadonlyMap<string, string> => {
 
       if (separator <= 0 || separator === pair.length - 1) {
         throw new Error(
-          `Invalid GATEWAY_API_KEYS entry "${pair}", expected format "client:key"`
+          "Invalid GATEWAY_API_KEYS entry; expected format \"client:key\""
         );
       }
 

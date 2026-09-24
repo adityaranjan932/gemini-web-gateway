@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { chmod, mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 
 import { env } from "../config/env.js";
@@ -31,7 +31,8 @@ const loadSession = async (): Promise<void> => {
 
 const saveSession = async (): Promise<void> => {
   await mkdir(dirname(env.gemini.sessionFile), { recursive: true });
-  await writeFile(env.gemini.sessionFile, JSON.stringify(session));
+  await writeFile(env.gemini.sessionFile, JSON.stringify(session), { mode: 0o600 });
+  await chmod(env.gemini.sessionFile, 0o600);
 };
 
 const rotateCookies = async (): Promise<void> => {

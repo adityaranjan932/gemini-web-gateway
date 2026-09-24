@@ -16,8 +16,9 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
+app.use("/v1", globalRateLimit);
 app.use("/v1", authenticate);
-app.use("/v1", clientRateLimit, globalRateLimit);
+app.use("/v1", clientRateLimit);
 app.use("/v1", chatRouter);
 
 app.use(notFoundHandler);

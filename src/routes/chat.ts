@@ -2,8 +2,8 @@ import { randomUUID } from "node:crypto";
 
 import { Router, type Response } from "express";
 
-import type { ChatMessage } from "../core/provider.js";
 import { chat } from "../providers/gemini-web.js";
+import type { ChatMessage } from "../types/chat.js";
 
 const DEFAULT_MODEL = "gemini-web";
 const ROLES = new Set(["system", "user", "assistant"]);
@@ -48,7 +48,7 @@ router.post("/chat/completions", async (req, res) => {
         {
           index: 0,
           message: { role: "assistant", content: result.content },
-          finish_reason: result.finishReason,
+          finish_reason: "stop",
         },
       ],
       usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },

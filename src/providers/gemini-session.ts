@@ -12,6 +12,7 @@ interface Session {
 }
 
 let session: Session = { psid: env.gemini.psid, psidts: env.gemini.psidts };
+let pendingRefresh: Promise<void> | undefined;
 
 export const cookieHeader = (): string =>
   `__Secure-1PSID=${session.psid}; __Secure-1PSIDTS=${session.psidts}`;
@@ -33,7 +34,7 @@ const saveSession = async (): Promise<void> => {
   await writeFile(env.gemini.sessionFile, JSON.stringify(session));
 };
 
-export const refreshSession = async (): Promise<void> => {
+const rotateCookies = async (): Promise<void> => {
   const response = await fetch(ROTATE_URL, {
     method: "POST",
     headers: { Cookie: cookieHeader(), "Content-Type": "application/json" },
@@ -54,6 +55,14 @@ export const refreshSession = async (): Promise<void> => {
     session = { ...session, psidts };
     await saveSession();
   }
+};
+
+export const refreshSession = (): Promise<void> => {
+  pendingRefresh ??= rotateCookies().finally(() => {
+    pendingRefresh = undefined;
+  });
+
+  return pendingRefresh;
 };
 
 const refreshInBackground = (): void => {

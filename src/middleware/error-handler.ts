@@ -5,6 +5,15 @@ interface HttpError extends Error {
   expose?: boolean;
 }
 
+export const notFoundHandler = (req: Request, res: Response): void => {
+  res.status(404).json({
+    error: {
+      message: `Route ${req.method} ${req.path} not found`,
+      type: "not_found_error",
+    },
+  });
+};
+
 export const errorHandler = (
   error: HttpError,
   _req: Request,

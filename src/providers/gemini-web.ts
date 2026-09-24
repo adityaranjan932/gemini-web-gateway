@@ -1,5 +1,5 @@
 import { env } from "../config/env.js";
-import type { ChatMessage, ChatRequest, ChatResult } from "../core/provider.js";
+import type { ChatMessage, ChatRequest, ChatResult } from "../types/chat.js";
 import { cookieHeader, refreshSession } from "./gemini-session.js";
 
 const BASE_URL = "https://gemini.google.com";
@@ -121,5 +121,5 @@ export const chat = async (request: ChatRequest): Promise<ChatResult> => {
     content = await generate(prompt);
   }
 
-  return { content, model: request.model, finishReason: "stop" };
+  return { content, model: request.model };
 };

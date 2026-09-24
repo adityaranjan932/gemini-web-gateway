@@ -10,6 +10,28 @@ const requireEnv = (name: string): string => {
   return value;
 };
 
+const optionalEnv = (name: string, fallback: string): string => {
+  const value = process.env[name]?.trim();
+
+  return value ? value : fallback;
+};
+
+const positiveIntEnv = (name: string, fallback: number): number => {
+  const raw = process.env[name]?.trim();
+
+  if (!raw) {
+    return fallback;
+  }
+
+  const value = Number(raw);
+
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new Error(`Environment variable ${name} must be a positive integer, got "${raw}"`);
+  }
+
+  return value;
+};
+
 const parseApiKeys = (raw: string): ReadonlyMap<string, string> => {
   const entries = raw
     .split(",")
@@ -35,18 +57,18 @@ const parseApiKeys = (raw: string): ReadonlyMap<string, string> => {
 };
 
 export const env = {
-  port: Number(process.env["PORT"]) || 8080,
-  nodeEnv: process.env["NODE_ENV"] ?? "development",
-  requestBodyLimit: process.env["REQUEST_BODY_LIMIT"] ?? "1mb",
+  port: positiveIntEnv("PORT", 8080),
+  requestBodyLimit: optionalEnv("REQUEST_BODY_LIMIT", "1mb"),
   apiKeys: parseApiKeys(requireEnv("GATEWAY_API_KEYS")),
   rateLimit: {
-    perClient: Number(process.env["RATE_LIMIT_PER_CLIENT"]) || 10,
-    global: Number(process.env["RATE_LIMIT_GLOBAL"]) || 30,
+    perClient: positiveIntEnv("RATE_LIMIT_PER_CLIENT", 10),
+    global: positiveIntEnv("RATE_LIMIT_GLOBAL", 30),
   },
   gemini: {
     psid: requireEnv("GEMINI_PSID"),
     psidts: requireEnv("GEMINI_PSIDTS"),
-    refreshMinutes: Number(process.env["GEMINI_REFRESH_MINUTES"]) || 10,
-    sessionFile: process.env["GEMINI_SESSION_FILE"] ?? "data/session.json",
+    refreshMinutes: positiveIntEnv("GEMINI_REFRESH_MINUTES", 10),
+    timeoutMs: positiveIntEnv("GEMINI_TIMEOUT_SECONDS", 90) * 1000,
+    sessionFile: optionalEnv("GEMINI_SESSION_FILE", "data/session.json"),
   },
 } as const;

@@ -38,6 +38,7 @@ export const refreshSession = async (): Promise<void> => {
     method: "POST",
     headers: { Cookie: cookieHeader(), "Content-Type": "application/json" },
     body: '[000,"-0000000000000000000"]',
+    signal: AbortSignal.timeout(env.gemini.timeoutMs),
   });
 
   if (!response.ok) {

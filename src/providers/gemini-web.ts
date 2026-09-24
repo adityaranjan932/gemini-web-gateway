@@ -1,3 +1,4 @@
+import { env } from "../config/env.js";
 import type { ChatMessage, ChatRequest, ChatResult } from "../core/provider.js";
 import { cookieHeader, refreshSession } from "./gemini-session.js";
 
@@ -20,6 +21,7 @@ const tryParse = (value: string): any => {
 const fetchAccessToken = async (): Promise<string> => {
   const response = await fetch(`${BASE_URL}/app`, {
     headers: { Cookie: cookieHeader(), "User-Agent": USER_AGENT },
+    signal: AbortSignal.timeout(env.gemini.timeoutMs),
   });
 
   const token = /"SNlM0e":"(.*?)"/.exec(await response.text())?.[1];
@@ -86,6 +88,7 @@ const generate = async (prompt: string): Promise<string> => {
       "X-Same-Domain": "1",
     },
     body,
+    signal: AbortSignal.timeout(env.gemini.timeoutMs),
   });
 
   if (!response.ok) {
@@ -109,7 +112,11 @@ export const chat = async (request: ChatRequest): Promise<ChatResult> => {
 
   try {
     content = await generate(prompt);
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.name === "TimeoutError") {
+      throw error;
+    }
+
     await refreshSession();
     content = await generate(prompt);
   }

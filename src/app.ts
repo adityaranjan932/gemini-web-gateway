@@ -2,6 +2,7 @@ import express, { type Express } from "express";
 
 import { env } from "./config/env.js";
 import { authenticate } from "./middleware/auth.js";
+import { errorHandler } from "./middleware/error-handler.js";
 import { clientRateLimit, globalRateLimit } from "./middleware/rate-limit.js";
 import chatRouter from "./routes/chat.js";
 
@@ -16,5 +17,7 @@ app.get("/health", (_req, res) => {
 app.use("/v1", authenticate);
 app.use("/v1", clientRateLimit, globalRateLimit);
 app.use("/v1", chatRouter);
+
+app.use(errorHandler);
 
 export default app;

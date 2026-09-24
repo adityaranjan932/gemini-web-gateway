@@ -5,7 +5,7 @@ import { Router, type Response } from "express";
 import { chat } from "../providers/gemini-web.js";
 import type { ChatMessage } from "../types/chat.js";
 
-const DEFAULT_MODEL = "gemini-web";
+const DEFAULT_MODEL = "gateway";
 const ROLES = new Set(["system", "user", "assistant"]);
 
 const router: Router = Router();

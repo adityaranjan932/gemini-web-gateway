@@ -67,6 +67,7 @@ export const env = {
   gemini: {
     psid: requireEnv("GEMINI_PSID"),
     psidts: requireEnv("GEMINI_PSIDTS"),
+    modelHeader: requireEnv("GEMINI_MODEL_HEADER"),
     refreshMinutes: positiveIntEnv("GEMINI_REFRESH_MINUTES", 10),
     timeoutMs: positiveIntEnv("GEMINI_TIMEOUT_SECONDS", 90) * 1000,
     sessionFile: optionalEnv("GEMINI_SESSION_FILE", "data/session.json"),

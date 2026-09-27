@@ -44,6 +44,7 @@ PORT=8080
 GATEWAY_API_KEYS=local:dev-key-1
 GEMINI_PSID=your-psid-value
 GEMINI_PSIDTS=your-psidts-value
+GEMINI_MODEL_HEADER=your-model-header-json
 ```
 
 | Variable | Required | Default | Description |
@@ -51,6 +52,7 @@ GEMINI_PSIDTS=your-psidts-value
 | `GATEWAY_API_KEYS` | yes | - | Client keys in `client:key` format, comma separated. Example: `client-a:sk-abc123,client-b:sk-xyz789`. The part before `:` is only a name used in logs and for per-client rate limits. |
 | `GEMINI_PSID` | yes | - | Value of the `__Secure-1PSID` cookie |
 | `GEMINI_PSIDTS` | yes | - | Value of the `__Secure-1PSIDTS` cookie |
+| `GEMINI_MODEL_HEADER` | yes | - | JSON array sent in Gemini's internal model-selection header. Capture the value for the model you want from the Gemini web request. Changing it requires a server restart. |
 | `PORT` | no | `8080` | Port the server listens on |
 | `REQUEST_BODY_LIMIT` | no | `1mb` | Max request body size |
 | `RATE_LIMIT_PER_CLIENT` | no | `10` | Requests per minute per API key |
@@ -124,7 +126,7 @@ Request body:
 }
 ```
 
-`messages` is the only field that is read. `model` is ignored. The response always reports `"gateway"`, so a client that sends some other model name still gets a working reply instead of a wrong label. Multi-turn conversations work: the roles are flattened into one prompt for Gemini.
+`messages` is the only field that is read. `model` is ignored, and the upstream Gemini model is selected by `GEMINI_MODEL_HEADER`. The response always reports `"gateway"`, so a client that sends some other model name still gets a working reply instead of a wrong label. Multi-turn conversations work: the roles are flattened into one prompt for Gemini.
 
 Response:
 
@@ -190,4 +192,3 @@ src/
   routes/chat.ts               POST /v1/chat/completions
   types/                       shared types
 ```
-

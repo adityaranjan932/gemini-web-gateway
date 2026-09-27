@@ -86,6 +86,7 @@ const generate = async (prompt: string): Promise<string> => {
       Origin: BASE_URL,
       Referer: `${BASE_URL}/`,
       "X-Same-Domain": "1",
+      "x-goog-ext-525001261-jspb": env.gemini.modelHeader,
     },
     body,
     signal: AbortSignal.timeout(env.gemini.timeoutMs),
